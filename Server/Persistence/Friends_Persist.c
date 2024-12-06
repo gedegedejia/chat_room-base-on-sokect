@@ -38,29 +38,53 @@ int Friends_Perst_GetList(friends_t *FriendsList, int uid)
     MYSQL_ROW row, _row;
     char SQL[100];
     friends_t *NewNode = NULL;
-    sprintf(SQL,
-            "SELECT * FROM friends WHERE (uid = '%d' OR fuid = '%d')",
-            uid, uid);
+
+    // 查询好友关系表
+    sprintf(SQL, "SELECT uid, fuid, is_follow, state FROM friends WHERE (uid = '%d' OR fuid = '%d')", uid, uid);
     if (mysql_real_query(mysql, SQL, strlen(SQL)))
     {
-        printf("%s", mysql_error(mysql));
+        printf("Query failed: %s\n", mysql_error(mysql));
         return 0;
     }
     res = mysql_store_result(mysql);
+
     while ((row = mysql_fetch_row(res)))
     {
+        // 分配并初始化 NewNode
         NewNode = (friends_t *)malloc(sizeof(friends_t));
-        NewNode->uid = atoi(row[(uid != atoi(row[1]))]);
+        if (NewNode == NULL) {
+            perror("Failed to allocate memory for NewNode");
+            mysql_free_result(res);
+            return 0;
+        }
+
+        memset(NewNode, 0, sizeof(friends_t)); // 初始化整个结构体
+
+        // 根据 uid 和 fuid 决定谁是好友
+        int other_uid = (atoi(row[0]) == uid) ? atoi(row[1]) : atoi(row[0]);
+        NewNode->uid = other_uid;
         NewNode->is_follow = atoi(row[2]);
         NewNode->state = atoi(row[3]);
-        sprintf(SQL, "SELECT * FROM account WHERE uid = '%d'", NewNode->uid);
-        mysql_real_query(mysql, SQL, strlen(SQL));
+
+        // 查询账户信息
+        sprintf(SQL, "SELECT name, sex, is_vip, is_online FROM account WHERE uid = '%d'", NewNode->uid);
+        if (mysql_real_query(mysql, SQL, strlen(SQL))) {
+            printf("Query failed: %s\n", mysql_error(mysql));
+            free(NewNode);
+            mysql_free_result(res);
+            return 0;
+        }
         _res = mysql_store_result(mysql);
-        _row = mysql_fetch_row(_res);
-        strcpy(NewNode->name, _row[1]);
-        NewNode->sex = atoi(_row[2]);
-        NewNode->is_vip = atoi(_row[3]);
-        NewNode->is_online = atoi(_row[4]);
+        if (_res && (_row = mysql_fetch_row(_res)) != NULL) {
+            strncpy(NewNode->name, _row[0], sizeof(NewNode->name) - 1);
+            NewNode->sex = atoi(_row[1]);
+            NewNode->is_vip = atoi(_row[2]);
+            NewNode->is_online = atoi(_row[3]);
+        } else {
+            printf("No data found for UID: %d\n", NewNode->uid);
+            free(NewNode);
+            continue; // Skip adding this node to the list
+        }
         List_AddHead(FriendsList, NewNode);
         mysql_free_result(_res);
     }

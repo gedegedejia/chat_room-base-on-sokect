@@ -3,6 +3,7 @@
 #include "./Account_UI.h"
 #include "../Common/Common.h"
 #include "../Service/Account_Srv.h"
+#define MAX_USERNAME_LEN 30  // 定义用户名的最大长度
 
 extern char *login_name;
 int Account_UI_SignIn()
@@ -55,6 +56,15 @@ int Account_UI_Login()
     printf("请输入密码:");
     scanf("%s", password);
     ffflush();
+	
+    // 确保 login_name 指针已经分配内存
+    login_name = malloc(MAX_USERNAME_LEN * sizeof(char));  // 为 login_name 分配内存
+
+    if (login_name == NULL) {
+        printf("内存分配失败！\n");
+        return -1;
+    }
+
     strcpy(login_name, name);
     return Account_Srv_Login(name, password);
 }

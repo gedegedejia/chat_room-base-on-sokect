@@ -1,7 +1,7 @@
 {
 	"server_port": 5555,
 	"db_port": 3305,
-	"host": "0.0.0.0",
+	"host": "localhost",
 	"user": "root",
 	"pass": "123456",
 	"database": "chat_room"
