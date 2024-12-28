@@ -10,7 +10,7 @@ void Account_Srv_RecvIsOnline(char *JSON);
  */
 int Account_Srv_Out();
 
-int Account_Srv_SignIn(const char *name, int sex, const char *password);
+int Account_Srv_SignIn(const char *name, const char *password);
 
 int Account_Srv_Login(const char *name, const char *password);
 

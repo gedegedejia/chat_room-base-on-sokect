@@ -19,7 +19,7 @@ int Account_Perst_IsUserName(const char *name);
  * 参数传入一个用户名和密码
  * 写入成功返回1,否则返回0
  */
-int Account_Perst_AddUser(const char *name, int sex, const char *password);
+int Account_Perst_AddUser(const char *name, const char *password);
 
 /*
  * 检测用户名(uid)密码是否匹配

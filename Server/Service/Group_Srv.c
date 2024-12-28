@@ -205,7 +205,7 @@ void Group_Srv_ShowMember(int client_fd, const char *JSON)
         cJSON_AddNumberToObject(root, "gid", m->gid);
         cJSON_AddNumberToObject(root, "uid", m->user_info.uid);
         cJSON_AddStringToObject(root, "name", m->user_info.name);
-        cJSON_AddNumberToObject(root, "sex", m->user_info.sex);
+        // cJSON_AddNumberToObject(root, "sex", m->user_info.sex);
         cJSON_AddNumberToObject(root, "is_vip", m->user_info.is_vip);
         cJSON_AddNumberToObject(root, "is_online", m->user_info.is_online);
         cJSON_AddNumberToObject(root, "permission", m->permission);

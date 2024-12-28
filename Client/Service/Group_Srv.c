@@ -200,8 +200,10 @@ void Group_Srv_ShowMember(const char *massage)
     root = cJSON_Parse(massage);
     item = cJSON_GetObjectItem(root, "name");
     strcpy(GroupMember.name, item->valuestring);
+    /*
     item = cJSON_GetObjectItem(root, "sex");
     GroupMember.sex = item->valueint;
+    */
     item = cJSON_GetObjectItem(root, "is_online");
     GroupMember.is_online = item->valueint;
     item = cJSON_GetObjectItem(root, "is_vip");
@@ -209,12 +211,14 @@ void Group_Srv_ShowMember(const char *massage)
     item = cJSON_GetObjectItem(root, "permission");
     char *is_online[2] = {"●", "\e[32m●\e[0m"};
     char *is_vip[2] = {"", "\e[31m"};
+    /*
     char *sex[2] = {"\e[35m♀\e[0m", "\e[36m♂\e[0m"};
+    */
     char *per[3] = {"", "[\e[32m管理员\e[0m]", "[\e[33m群主\e[0m]"};
-    printf("   %s %s%s\e[0m %s %s\n",
+    printf("   %s %s%s\e[0m %s\n",
            is_online[GroupMember.is_online],
            is_vip[GroupMember.is_vip],
-           GroupMember.name, sex[GroupMember.sex],
+           GroupMember.name,
            per[item->valueint]);
     cJSON_Delete(root);
 }
@@ -328,3 +332,4 @@ void Group_Srv_RemoveMember(group_t *curGroup, char *name)
     My_Unlock();
     return;
 }
+

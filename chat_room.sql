@@ -7,7 +7,6 @@ USE `chat_room`;
 CREATE TABLE `account` (
   `uid` int(11) NOT NULL,
   `name` varchar(10) NOT NULL,
-  `sex` int(11) NOT NULL,
   `is_vip` int(11) NOT NULL,
   `is_online` int(11) NOT NULL,
   `password` varchar(33) NOT NULL
