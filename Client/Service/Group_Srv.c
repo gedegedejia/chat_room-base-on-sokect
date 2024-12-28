@@ -294,6 +294,13 @@ void Group_Srv_Delete(const char *massage)
 
 void Group_Srv_RemoveMember(group_t *curGroup, char *name)
 {
+    if (gl_uid != curGroup->owner)
+    {
+        printf("权限不足，只有群主可以删除群成员。\n");
+        getchar();
+        return;
+    }
+    
     cJSON *root = cJSON_CreateObject();
     cJSON *item = cJSON_CreateString("d");
     cJSON_AddItemToObject(root, "type", item);
@@ -332,4 +339,62 @@ void Group_Srv_RemoveMember(group_t *curGroup, char *name)
     My_Unlock();
     return;
 }
+
+void Group_Srv_DelRes(const char *JSON) {
+    // printf("接收到的消息：%s\n", JSON);
+
+    // 解析 JSON 数据
+    cJSON *root = cJSON_Parse(JSON);
+    if (root == NULL) {
+        printf("无法解析 JSON 数据。\n");
+        return;
+    }
+
+    // 获取 "type" 字段
+    cJSON *typeItem = cJSON_GetObjectItem(root, "type");
+    if (typeItem == NULL || typeItem->type != cJSON_String) {
+        printf("缺少 'type' 字段或字段类型错误。\n");
+        cJSON_Delete(root);
+        return;
+    }
+
+    // 根据 "type" 进行逻辑处理
+    if (strcmp(typeItem->valuestring, "d") == 0) {
+        cJSON *gnameItem = cJSON_GetObjectItem(root, "gname");
+        if (gnameItem != NULL && gnameItem->type == cJSON_String) {
+            const char *gname = gnameItem->valuestring;
+            printf("您已被群主移出%s群聊\n", gname);
+
+            // 查找并释放对应的群聊节点
+            group_t *prev = NULL;
+            group_t *cur = GroupList;
+            while (cur != NULL) {
+                if (strcmp(cur->name, gname) == 0) {
+                    // 从链表中移除节点
+                    if (prev == NULL) {
+                        GroupList = cur->next; // 如果是头节点
+                    } else {
+                        prev->next = cur->next; // 连接前后节点
+                    }
+
+                    // 释放节点
+                    free(cur);
+                    // printf("已释放群聊节点：%s\n", gname);
+                    break;
+                }
+                prev = cur;
+                cur = cur->next;
+            }
+        } else {
+            printf("通知字段 'gname' 不存在或类型错误。\n");
+        }
+    } else {
+        printf("未知的 'type' 类型：%s\n", typeItem->valuestring);
+    }
+
+    // 清理 JSON 对象
+    cJSON_Delete(root);
+}
+
+
 
