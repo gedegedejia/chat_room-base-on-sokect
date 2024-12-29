@@ -9,8 +9,9 @@ extern MYSQL *mysql;
 int Nick_Name_ADD(int uid, int target_uid, const char *nick_name) {
     char SQL[256]; // 扩大缓冲区，避免超出限制
     snprintf(SQL, sizeof(SQL),
-             "INSERT INTO user_notes (uid, target_uid, nick_name) VALUES ('%d', '%d', '%s')",
-             uid, target_uid, nick_name);
+             "INSERT INTO user_notes (uid, target_uid, nick_name) VALUES ('%d', '%d', '%s') "
+             "ON DUPLICATE KEY UPDATE nick_name = '%s'",
+             uid, target_uid, nick_name, nick_name);
 
     if (mysql_real_query(mysql, SQL, strlen(SQL))) {
         printf("MySQL Error [Nick_Name_ADD]: %s\n", mysql_error(mysql));
