@@ -9,6 +9,7 @@
 #include "./Friends_Srv.h"
 #include "./Chat_Srv.h"
 #include "./Group_Srv.h"
+#include "./Nick_Name_Srv.h"
 #include "../Common/cJSON.h"
 #include "../Common/List.h"
 #include "../Persistence/Friends_Persist.h"
@@ -47,6 +48,8 @@ void *thread(void *arg)
         strcpy(choice, item->valuestring);
         cJSON_Delete(root);
         //        printf("收到: sockfd = %d\n%s\n",client_fd,buf);
+
+        printf("收到: sockfd = %d\n%s\n", client_fd, choice);
         switch (choice[0])
         {
         case 'L':
@@ -64,6 +67,7 @@ void *thread(void *arg)
         case 'D':
             // 删除好友
             Friends_Srv_Del(client_fd, buf);
+            break;
         case 'G':
             // 获取好友列表
             Friends_Srv_GetList(client_fd, buf);
@@ -115,6 +119,9 @@ void *thread(void *arg)
         case 'E':
             // 获取私聊聊天记录
             Chat_Srv_SendPrivateRes(client_fd, buf);
+            break;
+        case 'N':
+            Nick_Name_Res(client_fd, buf);
             break;
         }
     }
@@ -171,3 +178,4 @@ void Connect(int port)
         pthread_create(&thid, NULL, thread, (void *)(long)client_fd); // 创建新线程
     }
 }
+

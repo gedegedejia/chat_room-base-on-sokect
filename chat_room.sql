@@ -41,6 +41,16 @@ CREATE TABLE `private_rec` (
   `msg` varchar(300) NOT NULL,
   `is_offline` int(11) NOT NULL
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+
+CREATE TABLE `user_notes` (
+  `uid` int(11) NOT NULL,         -- 备注创建者的用户ID
+  `target_uid` int(11) NOT NULL,  -- 被备注的用户ID
+  `note` varchar(100) NOT NULL,   -- 备注内容
+  PRIMARY KEY (`uid`, `target_uid`),  -- 确保每个用户对每个目标用户的备注唯一
+  FOREIGN KEY (`uid`) REFERENCES `account` (`uid`) ON DELETE CASCADE,
+  FOREIGN KEY (`target_uid`) REFERENCES `account` (`uid`) ON DELETE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+
 ALTER TABLE `account`
 ADD PRIMARY KEY (`uid`);
 ALTER TABLE `friends`

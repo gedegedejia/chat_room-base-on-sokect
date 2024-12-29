@@ -10,6 +10,8 @@
 #include "../Persistence/Account_Persist.h"
 #include "../Common/cJSON.h"
 #include "../Common/List.h"
+#include "../Persistence/Nick_Name_Persist.h"
+
 #define MSG_LEN 1024
 
 extern online_t *OnlineList;
@@ -25,6 +27,7 @@ int Friends_Srv_GetList(int sock_fd, const char *JSON)
     List_Init(FriendsList, friends_t);
     Friends_Perst_GetList(FriendsList, uid);
     friends_t *curPos;
+	printf("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
     List_ForEach(FriendsList, curPos)
     {
         root = cJSON_CreateObject();
@@ -34,8 +37,14 @@ int Friends_Srv_GetList(int sock_fd, const char *JSON)
         cJSON_AddItemToObject(root, "uid", item);
         item = cJSON_CreateString(curPos->name);
         cJSON_AddItemToObject(root, "name", item);
+
+		char *nick;
+        nick = Nick_Name_GET(uid, curPos->uid);
+        printf("nick = %s\n", nick);
+        item = cJSON_CreateString(nick);
+		cJSON_AddItemToObject(root, "nick", item);
         
-        item = cJSON_CreateBool(curPos->is_vip);
+		item = cJSON_CreateBool(curPos->is_vip);
         cJSON_AddItemToObject(root, "is_vip", item);
         item = cJSON_CreateBool(curPos->is_follow);
         cJSON_AddItemToObject(root, "is_follow", item);
@@ -44,6 +53,7 @@ int Friends_Srv_GetList(int sock_fd, const char *JSON)
         item = cJSON_CreateBool(curPos->state);
         cJSON_AddItemToObject(root, "state", item);
         char *out = cJSON_Print(root);
+		printf("%s\n",out);
         cJSON_Delete(root);
         if (send(sock_fd, (void *)out, MSG_LEN, 0) < 0)
         {
@@ -278,5 +288,6 @@ int Friends_Srv_Del(int sock_fd, const char *JSON)
 
     return 1;
 }
+
 
 

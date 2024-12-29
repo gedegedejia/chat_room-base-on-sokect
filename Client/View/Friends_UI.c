@@ -4,11 +4,13 @@
 #include "./Account_UI.h"
 #include "../Service/Friends_Srv.h"
 #include "../Common/List.h"
+#include <string.h>
 
 extern friends_t *FriendsList;
 extern int PriMsgNum;
 extern int gl_uid;
 int f_num = 0, online_num = 0, a_num = 0;
+
 void Friends_UI_ShowList()
 {
     friends_t *curPos = NULL;
@@ -19,6 +21,7 @@ void Friends_UI_ShowList()
     // char *sex[2] = {"\e[35m♀\e[0m", "\e[36m♂\e[0m"};
     char *is_follow[2] = {"", "\e[31m♥\e[0m"};
     char is_msg[2][20] = {"", ""};
+
     List_ForEach(FriendsList, curPos)
     {
         if (curPos->state != 1)
@@ -30,10 +33,13 @@ void Friends_UI_ShowList()
         if (curPos->is_online)
             online_num++;
         sprintf(is_msg[0], "(\e[31m%d\e[0m)", curPos->NewMsgNum);
-        printf("   %s %s%s\e[0m %s %s\n",
+        
+		
+        printf("   %s %s%s\e[0m (%s) %s %s\n",
                is_online[curPos->is_online],
                is_vip[curPos->is_vip],
                curPos->name,
+			   curPos->nick,
                is_follow[curPos->is_follow],
                is_msg[(curPos->NewMsgNum == 0)]);
     }
@@ -111,4 +117,5 @@ void Friends_UI_Apply()
         }
     }
 }
+
 

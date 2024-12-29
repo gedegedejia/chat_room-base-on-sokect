@@ -42,6 +42,7 @@ int Friends_Srv_GetList()
     {
         // pthread_mutex_lock(&mutex);
         My_Lock();
+        // printf("massage: %s\n",massage);
         root = cJSON_Parse(massage);
         item = cJSON_GetObjectItem(root, "uid");
         if (item->valueint == 0)
@@ -56,6 +57,8 @@ int Friends_Srv_GetList()
         strcpy(newNode->name, item->valuestring);
         item = cJSON_GetObjectItem(root, "is_vip");
         newNode->is_vip = item->valueint;
+        item = cJSON_GetObjectItem(root, "nick");
+        strcpy(newNode->nick, item->valuestring);  
         item = cJSON_GetObjectItem(root, "is_follow");
         newNode->is_follow = item->valueint;
         item = cJSON_GetObjectItem(root, "is_online");
@@ -289,4 +292,5 @@ int Friends_Srv_ApplyRes(const char *JSON)
     cJSON_Delete(root);
     return 1;
 }
+
 
