@@ -1,0 +1,8 @@
+hello
+sudo systemctl start mysql
+
+sudo mysql -u root
+
+gdb ./chat_room_cli
+
+set args 127.0.0.1 5555

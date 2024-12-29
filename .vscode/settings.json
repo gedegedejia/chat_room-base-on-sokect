@@ -7,7 +7,8 @@
         "iostream": "cpp",
         "list": "c",
         "cjson.h": "c",
-        "friends_srv.h": "c"
+        "friends_srv.h": "c",
+        "nick_name_ui.h": "c"
     },
     "sqltools.connections": [
         {

@@ -5,10 +5,12 @@
 #include "./Friends_UI.h"
 #include "./Chat_UI.h"
 #include "./Group_UI.h"
+#include "./Nick_Name_UI.h"
 #include "../Service/Account_Srv.h"
 #include "../Service/Friends_Srv.h"
 #include "../Service/Chat_Srv.h"
 #include "../Service/Group_Srv.h"
+
 extern int gl_uid;
 char *login_name;
 void Main_UI_Hello()
@@ -23,7 +25,7 @@ void Main_UI_Hello()
         system("clear");
         printf(
             "==============================\n"
-            "*****欢迎使来到ysx聊天室*****\n"
+            "*****欢迎使来到聊天室*****\n"
             "==============================\n");
         printf(
             "功能选项:\n"
@@ -68,7 +70,7 @@ void Main_UI_Menu()
         printf("--------------功能--------------\n");
         printf("1.选择好友|2.选择群聊|3.处理申请\n"
                "4.添加好友|5.删除好友|6.创建群聊\n"
-               "7.注销登录\n");
+               "7.注销登录|8.备注\n");
         printf("--------------------------------\n"
                "请选择功能:");
         scanf("%c", &choice);
@@ -97,6 +99,9 @@ void Main_UI_Menu()
             break;
         case '7':
             Account_Srv_Out();
+            break;
+        case '8':
+            Nick_name_UI_Init();
             break;
         }
     } while (choice != '7');

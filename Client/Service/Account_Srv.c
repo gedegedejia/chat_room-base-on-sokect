@@ -80,7 +80,7 @@ int Account_Srv_Out()
     return rtn;
 }
 
-int Account_Srv_SignIn(const char *name, int sex, const char *password)
+int Account_Srv_SignIn(const char *name, const char *password)
 {
     // char buf[1024];
     int rtn;
@@ -89,11 +89,16 @@ int Account_Srv_SignIn(const char *name, int sex, const char *password)
     cJSON_AddItemToObject(root, "type", item);
     item = cJSON_CreateString(name);
     cJSON_AddItemToObject(root, "name", item);
+
+    /* 删除性别代码
     item = cJSON_CreateBool(sex);
     cJSON_AddItemToObject(root, "sex", item);
+     */
+
     item = cJSON_CreateString(password);
     cJSON_AddItemToObject(root, "password", item);
     char *out = cJSON_Print(root);
+
     if (send(sock_fd, (void *)out, 1024, 0) < 0)
     {
         perror("send: 请求服务器失败");
@@ -125,6 +130,7 @@ int Account_Srv_SignIn(const char *name, int sex, const char *password)
     My_Unlock();
     return rtn;
 }
+
 int Account_Srv_Login(const char *name, const char *password)
 {
     // printf("进入登录函数\n");

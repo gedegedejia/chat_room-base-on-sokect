@@ -38,10 +38,10 @@ int Account_Perst_IsUserName(const char *name)
     return rtn;
 }
 
-int Account_Perst_AddUser(const char *name, int sex, const char *password)
+int Account_Perst_AddUser(const char *name, const char *password)
 {
     char SQL[100];
-    sprintf(SQL, "INSERT INTO account VALUES (NULL , '%s' ,'%d' , 0, 0 , md5('%s'))", name, sex, password);
+    sprintf(SQL, "INSERT INTO account VALUES (NULL , '%s', 0, 0 , md5('%s'))", name, password);
     if (mysql_real_query(mysql, SQL, strlen(SQL)))
     {
         printf("%s\n", mysql_error(mysql));

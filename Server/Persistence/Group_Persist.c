@@ -148,9 +148,9 @@ int Group_Perst_GetGroupMember(group_member_t *GroupMember, int gid)
         NewNode->gid = atoi(row[0]);
         NewNode->user_info.uid = atoi(row[1]);
         strcpy(NewNode->user_info.name, _row[1]);
-        NewNode->user_info.sex = atoi(_row[2]);
-        NewNode->user_info.is_vip = atoi(_row[3]);
-        NewNode->user_info.is_online = atoi(_row[4]);
+        // NewNode->user_info.sex = atoi(_row[2]);
+        NewNode->user_info.is_vip = atoi(_row[2]);
+        NewNode->user_info.is_online = atoi(_row[3]);
         NewNode->user_info.is_follow = 0;
         NewNode->user_info.state = 0;
         NewNode->user_info.next = NULL;

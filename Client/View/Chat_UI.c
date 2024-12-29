@@ -27,7 +27,7 @@ void Chat_UI_Private()
         ffflush();
         List_ForEach(FriendsList, f)
         {
-            // printf("f->name = %s\n" ,f->name);
+            printf("f->name = %s\n" ,f->name);
             if (strcmp(f->name, fname) == 0)
             {
                 curFriend = f;

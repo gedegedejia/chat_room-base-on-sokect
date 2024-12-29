@@ -67,7 +67,7 @@ int Friends_Perst_GetList(friends_t *FriendsList, int uid)
         NewNode->state = atoi(row[3]);
 
         // 查询账户信息
-        sprintf(SQL, "SELECT name, sex, is_vip, is_online FROM account WHERE uid = '%d'", NewNode->uid);
+        sprintf(SQL, "SELECT name, is_vip, is_online FROM account WHERE uid = '%d'", NewNode->uid);
         if (mysql_real_query(mysql, SQL, strlen(SQL))) {
             printf("Query failed: %s\n", mysql_error(mysql));
             free(NewNode);
@@ -77,9 +77,9 @@ int Friends_Perst_GetList(friends_t *FriendsList, int uid)
         _res = mysql_store_result(mysql);
         if (_res && (_row = mysql_fetch_row(_res)) != NULL) {
             strncpy(NewNode->name, _row[0], sizeof(NewNode->name) - 1);
-            NewNode->sex = atoi(_row[1]);
-            NewNode->is_vip = atoi(_row[2]);
-            NewNode->is_online = atoi(_row[3]);
+            //NewNode->sex = atoi(_row[1]);
+            NewNode->is_vip = atoi(_row[1]);
+            NewNode->is_online = atoi(_row[2]);
         } else {
             printf("No data found for UID: %d\n", NewNode->uid);
             free(NewNode);
@@ -102,9 +102,9 @@ int Friends_Perst_GetFriendInfo(friends_t *Node)
     res = mysql_store_result(mysql);
     row = mysql_fetch_row(res);
     strcpy(Node->name, row[1]);
-    Node->sex = atoi(row[2]);
-    Node->is_vip = atoi(row[3]);
-    Node->is_online = atoi(row[4]);
+    // Node->sex = atoi(row[2]);
+    Node->is_vip = atoi(row[2]);
+    Node->is_online = atoi(row[3]);
     Node->is_follow = 0;
     Node->state = 0;
     mysql_free_result(res);

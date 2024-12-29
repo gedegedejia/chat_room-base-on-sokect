@@ -142,13 +142,15 @@ void Chat_Srv_RecvPrivate(const char *JSON)
         {
             strcpy(NewMsg->name, f->name);
             (f->NewMsgNum)++;
+			NewMsg->next = NULL;
+			cJSON_Delete(root);
+			private_msg_t *curPos;
+			List_AddTail(PriMsgList, curPos, NewMsg);
+			printf("\n%s 发来一条消息\n", NewMsg->name);
+			break;
         }
     }
-    NewMsg->next = NULL;
-    cJSON_Delete(root);
-    private_msg_t *curPos;
-    List_AddTail(PriMsgList, curPos, NewMsg);
-    printf("\n%s 发来一条消息\n", NewMsg->name);
+
 }
 
 void Chat_Srv_RecvGroup(const char *JSON)

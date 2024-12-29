@@ -103,6 +103,7 @@ void *thread(void *arg)
             Group_Srv_ShowMember(massage);
             break;
         case 'd':
+            Group_Srv_DelRes(massage);
             break;
         case 'D':
             // 删除群组

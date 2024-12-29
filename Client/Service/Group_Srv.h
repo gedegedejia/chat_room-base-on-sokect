@@ -37,4 +37,7 @@ void Group_Srv_Quit(group_t *curGroup);
 void Group_Srv_RemoveMember(group_t *curGroup, char *name);
 
 void Group_Srv_Delete(const char *massage);
+
+void Group_Srv_DelRes(const char *massage);
+
 #endif

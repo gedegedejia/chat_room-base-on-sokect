@@ -42,6 +42,7 @@ int Friends_Srv_GetList()
     {
         // pthread_mutex_lock(&mutex);
         My_Lock();
+        // printf("massage: %s\n",massage);
         root = cJSON_Parse(massage);
         item = cJSON_GetObjectItem(root, "uid");
         if (item->valueint == 0)
@@ -54,10 +55,10 @@ int Friends_Srv_GetList()
         newNode->uid = item->valueint;
         item = cJSON_GetObjectItem(root, "name");
         strcpy(newNode->name, item->valuestring);
-        item = cJSON_GetObjectItem(root, "sex");
-        newNode->sex = item->valueint;
         item = cJSON_GetObjectItem(root, "is_vip");
         newNode->is_vip = item->valueint;
+        item = cJSON_GetObjectItem(root, "nick");
+        strcpy(newNode->nick, item->valuestring);  
         item = cJSON_GetObjectItem(root, "is_follow");
         newNode->is_follow = item->valueint;
         item = cJSON_GetObjectItem(root, "is_online");
@@ -135,43 +136,87 @@ int Friends_Srv_SendAdd(const char *fname)
 int Friends_Srv_SendDel(friends_t *f)
 {
     int rtn;
+    
+    // 创建 JSON 对象并添加数据
     cJSON *root = cJSON_CreateObject();
     cJSON *item = cJSON_CreateString("D");
     cJSON_AddItemToObject(root, "type", item);
+    
     item = cJSON_CreateNumber(gl_uid);
     cJSON_AddItemToObject(root, "uid", item);
+    
     item = cJSON_CreateString(f->name);
     cJSON_AddItemToObject(root, "fname", item);
+    
+    // 打印完整的 JSON
     char *out = cJSON_Print(root);
+    
+    // 发送 JSON 数据
     if (send(sock_fd, (void *)out, MSG_LEN, 0) < 0)
     {
         perror("send: 请求服务器失败");
         return 0;
     }
+    
     free(out);
     cJSON_Delete(root);
+
+    // 锁定线程
     My_Lock();
+    // printf("Debug: 已锁定线程，等待服务器响应\n");
+    
+    // 解析服务器返回的响应
     root = cJSON_Parse(massage);
+    if (root == NULL)
+    {
+        printf("Error: 服务器返回的 JSON 无法解析\n");
+        My_Unlock();
+        return 0;
+    }
+    // printf("Debug: 解析服务器响应成功\n");
+
     item = cJSON_GetObjectItem(root, "res");
+    if (item == NULL)
+    {
+        // printf("Error: 响应中缺少 'res' 字段\n");
+        cJSON_Delete(root);
+        My_Unlock();
+        return 0;
+    }
     int res = item->valueint;
+    // printf("Debug: 响应中的 res=%d\n", res);
+
+    // 根据响应结果处理
     if (res)
     {
-        List_FreeNode(FriendsList, f, friends_t)
-            printf("好友删除成功!");
+        // printf("Debug: 服务器允许删除好友，开始删除本地节点\n");
+        List_FreeNode(FriendsList, f, friends_t);
+        printf("好友删除成功!\n");
         getchar();
         rtn = 1;
     }
     else
     {
         item = cJSON_GetObjectItem(root, "reason");
-        printf("删除失败: %s", item->valuestring);
+        if (item != NULL)
+        {
+            printf("删除失败: %s\n", item->valuestring);
+        }
+        else
+        {
+            printf("Error: 响应中缺少 'reason' 字段\n");
+        }
         getchar();
         rtn = 0;
     }
+
+    // 清理资源并解锁
     cJSON_Delete(root);
     My_Unlock();
+    printf("Debug: 完成 Friends_Srv_SendDel 函数的执行，返回值=%d\n", rtn);
     return rtn;
 }
+
 
 int Friends_Srv_RecvAdd(const char *JSON)
 {
@@ -182,8 +227,6 @@ int Friends_Srv_RecvAdd(const char *JSON)
     newNode->uid = item->valueint;
     item = cJSON_GetObjectItem(root, "name");
     strcpy(newNode->name, item->valuestring);
-    item = cJSON_GetObjectItem(root, "sex");
-    newNode->sex = item->valueint;
     item = cJSON_GetObjectItem(root, "is_vip");
     newNode->is_vip = item->valueint;
     item = cJSON_GetObjectItem(root, "is_follow");
@@ -243,3 +286,5 @@ int Friends_Srv_ApplyRes(const char *JSON)
     cJSON_Delete(root);
     return 1;
 }
+
+

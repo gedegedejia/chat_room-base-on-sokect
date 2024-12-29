@@ -205,7 +205,7 @@ void Group_Srv_ShowMember(int client_fd, const char *JSON)
         cJSON_AddNumberToObject(root, "gid", m->gid);
         cJSON_AddNumberToObject(root, "uid", m->user_info.uid);
         cJSON_AddStringToObject(root, "name", m->user_info.name);
-        cJSON_AddNumberToObject(root, "sex", m->user_info.sex);
+        // cJSON_AddNumberToObject(root, "sex", m->user_info.sex);
         cJSON_AddNumberToObject(root, "is_vip", m->user_info.is_vip);
         cJSON_AddNumberToObject(root, "is_online", m->user_info.is_online);
         cJSON_AddNumberToObject(root, "permission", m->permission);
@@ -261,9 +261,11 @@ void Group_Srv_Quit(int client_fd, const char *JSON)
         Group_Perst_DeleteMember(gid, item->valueint);
     }
 }
+
 void Group_Srv_RemoveMember(int client_fd, const char *JSON)
 {
     char name[30];
+
     cJSON *root = cJSON_Parse(JSON);
     cJSON *item = cJSON_GetObjectItem(root, "gid");
     int gid = item->valueint;
@@ -301,6 +303,22 @@ void Group_Srv_RemoveMember(int client_fd, const char *JSON)
             res = 1;
             item = cJSON_CreateString("成员删除成功");
             printf("成员删除成功\n");
+            
+            int f_fd = Chat_Srv_GetFriendSock(uid);
+
+            group_t *GroupInfo = Group_Perst_GetInfo(gid);
+
+            cJSON *notify_root = cJSON_CreateObject();
+            cJSON_AddStringToObject(notify_root, "type", "d");
+            cJSON_AddStringToObject(notify_root, "gname", GroupInfo->name);
+            printf("获取到的群名称: %s\n", GroupInfo->name);
+
+            char *notify_out = cJSON_Print(notify_root);
+            cJSON_Delete(notify_root);
+            if (send(f_fd, notify_out, MSG_LEN, 0) <= 0) {
+                perror("send");
+            }
+            free(notify_out);
         }
         else
         {
@@ -308,11 +326,15 @@ void Group_Srv_RemoveMember(int client_fd, const char *JSON)
             printf("未知错误\n");
         }
     }
+
     cJSON_AddItemToObject(root, "reason", item);
     item = cJSON_CreateBool(res);
     cJSON_AddItemToObject(root, "res", item);
     char *out = cJSON_Print(root);
     cJSON_Delete(root);
+
+    printf("[DEBUG] Response JSON: %s\n", out);
+    
     if (send(client_fd, out, MSG_LEN, 0) <= 0)
     {
         perror("send");

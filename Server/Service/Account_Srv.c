@@ -130,12 +130,12 @@ int Account_Srv_Out(int sock_fd, char *JSON)
 int Account_Srv_SignIn(int sock_fd, char *JSON)
 {
     char name[30], password[30];
-    int sex;
+    // int sex;
     cJSON *root = cJSON_Parse(JSON);
     cJSON *item = cJSON_GetObjectItem(root, "name"); // 获取用户输入的昵称
     strcpy(name, item->valuestring);
-    item = cJSON_GetObjectItem(root, "sex"); // 获取用户输入的性别
-    sex = item->valueint;
+    // item = cJSON_GetObjectItem(root, "sex"); // 获取用户输入的性别
+    // sex = item->valueint;
     item = cJSON_GetObjectItem(root, "password"); // 输入用户输入的密码
     strcpy(password, item->valuestring);
     cJSON_Delete(root);
@@ -159,7 +159,7 @@ int Account_Srv_SignIn(int sock_fd, char *JSON)
     }
     else
     {
-        if (Account_Perst_AddUser(name, sex, password))
+        if (Account_Perst_AddUser(name, password))
         {
             item = cJSON_CreateBool(1);
             cJSON_AddItemToObject(root, "res", item);
